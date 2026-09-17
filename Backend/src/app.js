@@ -5,10 +5,26 @@ const cors = require("cors")
 const app = express()
 
 app.use(express.json())
-app.use(cookieParser()) 
+app.use(cookieParser())
 app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:4173",
+            "http://127.0.0.1:4173"
+        ]
+
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true)
+            return
+        }
+
+        callback(null, false)
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
 }))
 
 /* require all the routes here */

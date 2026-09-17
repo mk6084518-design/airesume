@@ -47,20 +47,26 @@ export const useAuth = () => {
     }
 
     useEffect(() => {
+        const hasToken = document.cookie.split(";").some((cookie) => cookie.trim().startsWith("token="))
+
+        if (!hasToken) {
+            setLoading(false)
+            return
+        }
 
         const getAndSetUser = async () => {
             try {
-
                 const data = await getMe()
                 setUser(data.user)
-            } catch (err) { } finally {
+            } catch (err) {
+                setUser(null)
+            } finally {
                 setLoading(false)
             }
         }
 
         getAndSetUser()
-
-    }, [])
+    }, [setLoading, setUser])
 
     return { user, loading, handleRegister, handleLogin, handleLogout }
 }
