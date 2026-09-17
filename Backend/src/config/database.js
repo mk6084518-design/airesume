@@ -1,16 +1,14 @@
 const mongoose = require("mongoose")
 
-
-
 async function connectToDB() {
+    const mongoUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/resume-improver"
 
     try {
-        await mongoose.connect(process.env.MONGO_URI)
-
+        await mongoose.connect(mongoUri)
         console.log("Connected to Database")
     }
     catch (err) {
-        console.log(err)
+        console.error("Database connection failed:", err.message)
     }
 }
 

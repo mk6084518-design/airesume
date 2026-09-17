@@ -3,9 +3,15 @@ const { z } = require("zod")
 const { zodToJsonSchema } = require("zod-to-json-schema")
 const puppeteer = require("puppeteer")
 
-const ai = new GoogleGenAI({
-    apiKey: process.env.GOOGLE_GENAI_API_KEY
-})
+const ai = process.env.GOOGLE_GENAI_API_KEY
+    ? new GoogleGenAI({ apiKey: process.env.GOOGLE_GENAI_API_KEY })
+    : null
+
+function ensureAiClient() {
+    if (!ai) {
+        throw new Error("GOOGLE_GENAI_API_KEY is not configured.")
+    }
+}
 
 
 const interviewReportSchema = z.object({
@@ -33,7 +39,7 @@ const interviewReportSchema = z.object({
 })
 
 async function generateInterviewReport({ resume, selfDescription, jobDescription }) {
-
+    ensureAiClient()
 
     const prompt = `Generate an interview report for a candidate with the following details:
                         Resume: ${resume}
@@ -77,6 +83,7 @@ async function generatePdfFromHtml(htmlContent) {
 }
 
 async function generateResumePdf({ resume, selfDescription, jobDescription }) {
+    ensureAiClient()
 
     const resumePdfSchema = z.object({
         html: z.string().describe("The HTML content of the resume which can be converted to PDF using any library like puppeteer")
