@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const apiBaseUrl = (
-    import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:3000"
+    import.meta.env.VITE_API_BASE_URL || "https://airesume-05fz.onrender.com"
 ).replace(/\/$/, "");
 
 const api = axios.create({
