@@ -1,13 +1,21 @@
 
 import axios from "axios";
 
+const apiBaseUrl = (
+    import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:3000"
+).replace(/\/$/, "");
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || "https://airesume-05fz.onrender.com",
+    baseURL: apiBaseUrl,
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
     },
 });
+
+function getApiErrorMessage(error) {
+    return error.response?.data?.message || error.message || "Request failed";
+}
 
 export async function register({ username, email, password }) {
     try {
@@ -19,10 +27,7 @@ export async function register({ username, email, password }) {
 
         return response.data;
     } catch (err) {
-        console.error(
-            "Register API Error:",
-            err.response?.data || err.message
-        );
+        console.error("Register API Error:", getApiErrorMessage(err));
 
         throw err;
     }
@@ -37,10 +42,7 @@ export async function login({ email, password }) {
 
         return response.data;
     } catch (err) {
-        console.error(
-            "Login API Error:",
-            err.response?.data || err.message
-        );
+        console.error("Login API Error:", getApiErrorMessage(err));
 
         throw err;
     }
@@ -52,10 +54,7 @@ export async function logout() {
 
         return response.data;
     } catch (err) {
-        console.error(
-            "Logout API Error:",
-            err.response?.data || err.message
-        );
+        console.error("Logout API Error:", getApiErrorMessage(err));
 
         throw err;
     }
@@ -67,10 +66,7 @@ export async function getMe() {
 
         return response.data;
     } catch (err) {
-        console.error(
-            "Get Me API Error:",
-            err.response?.data || err.message
-        );
+        console.error("Get Me API Error:", getApiErrorMessage(err));
 
         throw err;
     }
