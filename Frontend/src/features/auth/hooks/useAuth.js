@@ -7,6 +7,9 @@ import { login, register, logout, getMe } from "../services/auth.api";
 export const useAuth = () => {
 
     const context = useContext(AuthContext)
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider")
+    }
     const { user, setUser, loading, setLoading } = context
 
 
@@ -15,8 +18,10 @@ export const useAuth = () => {
         try {
             const data = await login({ email, password })
             setUser(data.user)
+            return true
         } catch {
-            return
+            setUser(null)
+            return false
         } finally {
             setLoading(false)
         }
@@ -27,8 +32,10 @@ export const useAuth = () => {
         try {
             const data = await register({ username, email, password })
             setUser(data.user)
+            return true
         } catch {
-            return
+            setUser(null)
+            return false
         } finally {
             setLoading(false)
         }
@@ -39,21 +46,15 @@ export const useAuth = () => {
         try {
             await logout()
             setUser(null)
+            return true
         } catch {
-            return
+            return false
         } finally {
             setLoading(false)
         }
     }
 
     useEffect(() => {
-        const hasToken = document.cookie.split(";").some((cookie) => cookie.trim().startsWith("token="))
-
-        if (!hasToken) {
-            setLoading(false)
-            return
-        }
-
         const getAndSetUser = async () => {
             try {
                 const data = await getMe()

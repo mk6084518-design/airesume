@@ -1,6 +1,7 @@
 const express = require("express")
 const cookieParser = require("cookie-parser")
 const cors = require("cors")
+const multer = require("multer")
 
 const app = express()
 
@@ -14,8 +15,9 @@ const allowedOrigins = [
     "http://localhost:5174",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
-    "https://airesume-1-ycaj.onrender.com"
-]
+    "https://airesume-1-ycaj.onrender.com",
+    process.env.FRONTEND_ORIGIN
+].filter(Boolean)
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -46,6 +48,18 @@ app.use("/api/interview", interviewRouter)
 // Test route
 app.get("/", (req, res) => {
     res.send("Server is running")
+})
+
+app.use((error, req, res, next) => {
+    if (error instanceof multer.MulterError) {
+        const message = error.code === "LIMIT_FILE_SIZE"
+            ? "Resume file must be 5MB or smaller."
+            : "Only PDF resume files are supported."
+
+        return res.status(400).json({ message })
+    }
+
+    next(error)
 })
 
 module.exports = app
